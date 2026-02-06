@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { protectRoute } from "../middleware/auth";
 import { getChats, getOrCreateChat } from "../controllers/chatController";
+import { authenticateToken } from "../middleware/auth";
 
 const router = Router();
 
-router.use(protectRoute);
+router.use(authenticateToken);
 
 router.get("/", getChats);
 router.post("/with/:participantId", getOrCreateChat);

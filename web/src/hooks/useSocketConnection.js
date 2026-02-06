@@ -1,20 +1,19 @@
-import { useEffect } from "react";
-import { useAuth } from "@clerk/clerk-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { useSocketStore } from "../lib/socket";
 
 export const useSocketConnection = (activeChatId) => {
-  const { getToken, isSignedIn } = useAuth();
+  const { getToken, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   const { socket, connect, disconnect, joinChat, leaveChat } = useSocketStore();
 
   // connect socket on mount
   useEffect(() => {
-    if (isSignedIn) {
-      getToken().then((token) => {
-        if (token) connect(token, queryClient);
-      });
+    if (isAuthenticated) {
+      const token = getToken();
+      if (token) connect(token, queryClient);
     } else {
       disconnect();
     }

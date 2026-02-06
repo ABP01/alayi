@@ -1,29 +1,32 @@
-import type { Request, Response, NextFunction } from "express";
-import { getAuth } from "@clerk/express";
+import type { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import { User } from "../models/User";
-import { requireAuth } from "@clerk/express";
 
-export type AuthRequest = Request & {
+export interface AuthRequest extends Request {
+  user?: any;
   userId?: string;
-};
+}
 
-export const protectRoute = [
-  requireAuth(),
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-      const { userId: clerkId } = getAuth(req);
-      // since we call requireAuth() this if check is not necessary
-      // if (!clerkId) return res.status(401).json({ message: "Unauthorized - invalid token" });
+export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
 
-      const user = await User.findOne({ clerkId });
-      if (!user) return res.status(404).json({ message: "User not found" });
-
-      req.userId = user._id.toString();
-
-      next();
-    } catch (error) {
-      res.status(500);
-      next(error);
+    if (!token) {
+      return res.status(401).json({ message: "Access token required" });
     }
-  },
-];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key") as any;
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
+    req.userId = user._id.toString();
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: "Invalid or expired token" });
+  }
+};

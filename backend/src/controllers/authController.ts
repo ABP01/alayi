@@ -1,52 +1,101 @@
 import type { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import type { AuthRequest } from "../middleware/auth";
 import { User } from "../models/User";
-import { clerkClient, getAuth } from "@clerk/express";
 
-export async function getMe(req: AuthRequest, res: Response, next: NextFunction) {
+export async function register(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.userId;
+    const { name, email, password } = req.body;
 
-    const user = await User.findById(userId);
-
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    res.status(200).json(user);
+    // Create new user
+    const user = new User({
+      name,
+      email,
+      password,
+    });
+
+    await user.save();
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "7d" }
+    );
+
+    res.status(201).json({
+      message: "User created successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
+      token,
+    });
   } catch (error) {
     res.status(500);
     next(error);
   }
 }
 
-export async function authCallback(req: Request, res: Response, next: NextFunction) {
+export async function login(req: Request, res: Response, next: NextFunction) {
   try {
-    const { userId: clerkId } = getAuth(req);
+    const { email, password } = req.body;
 
-    if (!clerkId) {
-      res.status(401).json({ message: "Unauthorized" });
-      return;
-    }
-
-    let user = await User.findOne({ clerkId });
-
+    // Find user by email
+    const user = await User.findOne({ email });
     if (!user) {
-      // get user info from clerk and save to db
-      const clerkUser = await clerkClient.users.getUser(clerkId);
-
-      user = await User.create({
-        clerkId,
-        name: clerkUser.firstName
-          ? `${clerkUser.firstName} ${clerkUser.lastName || ""}`.trim()
-          : clerkUser.emailAddresses[0]?.emailAddress?.split("@")[0],
-        email: clerkUser.emailAddresses[0]?.emailAddress,
-        avatar: clerkUser.imageUrl,
-      });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    res.json(user);
+    // Check password
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
+      token,
+    });
+  } catch (error) {
+    res.status(500);
+    next(error);
+  }
+}
+
+export async function getMe(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    res.json({
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      avatar: req.user.avatar,
+    });
   } catch (error) {
     res.status(500);
     next(error);

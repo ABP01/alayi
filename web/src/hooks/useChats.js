@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@clerk/clerk-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../contexts/AuthContext";
 import api from "../lib/axios";
 
 export const useChats = () => {
@@ -8,12 +8,15 @@ export const useChats = () => {
   return useQuery({
     queryKey: ["chats"],
     queryFn: async () => {
-      const token = await getToken();
+      const token = getToken();
+      if (!token) throw new Error("No token");
+
       const res = await api.get("/chats", {
         headers: { Authorization: `Bearer ${token}` },
       });
       return res.data;
     },
+    enabled: !!getToken(),
   });
 };
 
@@ -23,7 +26,9 @@ export const useGetOrCreateChat = () => {
 
   return useMutation({
     mutationFn: async (participantId) => {
-      const token = await getToken();
+      const token = getToken();
+      if (!token) throw new Error("No token");
+
       const res = await api.post(
         `/chats/with/${participantId}`,
         {},

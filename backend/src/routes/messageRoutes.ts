@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { protectRoute } from "../middleware/auth";
 import { getMessages } from "../controllers/messageController";
+import { authenticateToken } from "../middleware/auth";
 
 const router = Router();
 
-router.get("/chat/:chatId", protectRoute, getMessages);
+router.get("/chat/:chatId", authenticateToken, getMessages);
 
 export default router;

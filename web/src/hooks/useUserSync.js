@@ -1,10 +1,10 @@
-import { useAuth } from "@clerk/clerk-react";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import api from "../lib/axios";
 
 function useUserSync() {
-  const { isSignedIn, getToken } = useAuth();
+  const { isAuthenticated, getToken } = useAuth();
 
   const {
     mutate: syncUser,
@@ -12,9 +12,11 @@ function useUserSync() {
     isSuccess,
   } = useMutation({
     mutationFn: async () => {
-      const token = await getToken();
+      const token = getToken();
+      if (!token) throw new Error("No token");
+
       const res = await api.post(
-        "/auth/callback",
+        "/auth/me", // We'll use GET /auth/me instead of POST /auth/callback
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -25,10 +27,10 @@ function useUserSync() {
   });
 
   useEffect(() => {
-    if (isSignedIn && !isPending && !isSuccess) {
+    if (isAuthenticated && !isPending && !isSuccess) {
       syncUser();
     }
-  }, [isSignedIn, syncUser, isPending, isSuccess]);
+  }, [isAuthenticated, syncUser, isPending, isSuccess]);
 
   return { isSynced: isSuccess, isSyncing: isPending };
 }

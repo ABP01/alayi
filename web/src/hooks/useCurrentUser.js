@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../contexts/AuthContext";
 import api from "../lib/axios";
-import { useAuth } from "@clerk/clerk-react";
 
 export const useCurrentUser = () => {
   const { getToken } = useAuth();
@@ -8,11 +8,14 @@ export const useCurrentUser = () => {
   return useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
-      const token = await getToken();
+      const token = getToken();
+      if (!token) throw new Error("No token");
+
       const { data } = await api.get("/auth/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       return data;
     },
+    enabled: !!getToken(), // Only run if we have a token
   });
 };

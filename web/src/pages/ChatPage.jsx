@@ -1,18 +1,18 @@
-import { UserButton } from "@clerk/clerk-react";
+import { MessageSquareIcon, PlusIcon, SparklesIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { useSocketStore } from "../lib/socket";
 import { useSocketConnection } from "../hooks/useSocketConnection";
-import { SparklesIcon, MessageSquareIcon, PlusIcon } from "lucide-react";
+import { useSocketStore } from "../lib/socket";
 
-import { useChats, useGetOrCreateChat } from "../hooks/useChats";
-import { useMessages } from "../hooks/useMessages";
-import { ChatListItem } from "../components/ChatListItem";
 import { ChatHeader } from "../components/ChatHeader";
-import { MessageBubble } from "../components/MessageBubble";
 import { ChatInput } from "../components/ChatInput";
-import { useCurrentUser } from "../hooks/useCurrentUser";
+import { ChatListItem } from "../components/ChatListItem";
+import { MessageBubble } from "../components/MessageBubble";
 import { NewChatModal } from "../components/NewChatModal";
+import UserMenu from "../components/auth/UserMenu";
+import { useChats, useGetOrCreateChat } from "../hooks/useChats";
+import { useCurrentUser } from "../hooks/useCurrentUser";
+import { useMessages } from "../hooks/useMessages";
 
 // this code can be a lot cleaner, but here we try to keep it simple yet working
 // feel free to refactor it as you wish ✨
@@ -86,7 +86,7 @@ function ChatPage() {
               </div>
               <span className="font-bold">Whisper</span>
             </Link>
-            <UserButton />
+            <UserMenu />
           </div>
           <button
             onClick={() => setIsNewChatModalOpen(true)}

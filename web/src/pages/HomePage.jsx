@@ -1,7 +1,12 @@
-import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 import { ArrowRightIcon, SparklesIcon } from "lucide-react";
+import { useState } from "react";
+import LoginModal from "../components/auth/LoginModal";
+import RegisterModal from "../components/auth/RegisterModal";
 
 function HomePage() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+
   return (
     <div className="h-screen bg-base-100 text-base flex">
       {/* LEFT SIDE */}
@@ -20,18 +25,20 @@ function HomePage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <SignInButton mode="modal">
-              <button className="px-5 py-2.5 text-sm font-medium text-base-content/50 hover:text-base-content transition">
-                Sign in
-              </button>
-            </SignInButton>
+            <button
+              onClick={() => setShowLogin(true)}
+              className="px-5 py-2.5 text-sm font-medium text-base-content/50 hover:text-base-content transition"
+            >
+              Sign in
+            </button>
 
-            <SignUpButton mode="modal">
-              <button className="btn gap-2 bg-linear-to-r from-amber-500 to-orange-500 text-sm font-semibold rounded-full hover:opacity-90 shadow-lg shadow-orange-500/25 border-none">
-                Get Started
-                <ArrowRightIcon className="w-4 h-4" />
-              </button>
-            </SignUpButton>
+            <button
+              onClick={() => setShowRegister(true)}
+              className="btn gap-2 bg-linear-to-r from-amber-500 to-orange-500 text-sm font-semibold rounded-full hover:opacity-90 shadow-lg shadow-orange-500/25 border-none"
+            >
+              Get Started
+              <ArrowRightIcon className="w-4 h-4" />
+            </button>
           </div>
         </nav>
 
@@ -195,6 +202,25 @@ function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modals */}
+      <LoginModal
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        onSwitchToRegister={() => {
+          setShowLogin(false);
+          setShowRegister(true);
+        }}
+      />
+
+      <RegisterModal
+        isOpen={showRegister}
+        onClose={() => setShowRegister(false)}
+        onSwitchToLogin={() => {
+          setShowRegister(false);
+          setShowLogin(true);
+        }}
+      />
     </div>
   );
 }

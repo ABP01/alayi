@@ -1,20 +1,20 @@
 import { Navigate, Route, Routes } from "react-router";
-import HomePage from "./pages/HomePage";
-import ChatPage from "./pages/ChatPage";
-import { useAuth } from "@clerk/clerk-react";
 import PageLoader from "./components/PageLoader";
+import { useAuth } from "./contexts/AuthContext";
 import useUserSync from "./hooks/useUserSync";
+import ChatPage from "./pages/ChatPage";
+import HomePage from "./pages/HomePage";
 
 function App() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   useUserSync();
 
-  if (!isLoaded) return <PageLoader />;
+  if (loading) return <PageLoader />;
 
   return (
     <Routes>
-      <Route path="/" element={!isSignedIn ? <HomePage /> : <Navigate to={"/chat"} />} />
-      <Route path="/chat" element={isSignedIn ? <ChatPage /> : <Navigate to={"/"} />} />
+      <Route path="/" element={!isAuthenticated ? <HomePage /> : <Navigate to={"/chat"} />} />
+      <Route path="/chat" element={isAuthenticated ? <ChatPage /> : <Navigate to={"/"} />} />
     </Routes>
   );
 }

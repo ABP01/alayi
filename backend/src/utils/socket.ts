@@ -1,8 +1,8 @@
-import { Socket, Server as SocketServer } from "socket.io";
 import { Server as HttpServer } from "http";
-import { verifyToken } from "@clerk/express";
-import { Message } from "../models/Message";
+import jwt from "jsonwebtoken";
+import { Server as SocketServer } from "socket.io";
 import { Chat } from "../models/Chat";
+import { Message } from "../models/Message";
 import { User } from "../models/User";
 
 // store online users in memory: userId -> socketId
@@ -24,18 +24,16 @@ export const initializeSocket = (httpServer: HttpServer) => {
     if (!token) return next(new Error("Authentication error"));
 
     try {
-      const session = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY! });
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key") as any;
+      const user = await User.findById(decoded.userId);
 
-      const clerkId = session.sub;
-
-      const user = await User.findOne({ clerkId });
       if (!user) return next(new Error("User not found"));
 
       socket.data.userId = user._id.toString();
 
       next();
     } catch (error: any) {
-      next(new Error(error));
+      next(new Error("Invalid token"));
     }
   });
 
