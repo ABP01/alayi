@@ -21,7 +21,7 @@ function HomePage() {
             >
               <SparklesIcon className="size-5 text-primary-content" />
             </div>
-            <span className="text-xl font-bold">Whisper</span>
+            <span className="text-xl font-bold">Alayi</span>
           </div>
 
           <div className="flex items-center gap-2">

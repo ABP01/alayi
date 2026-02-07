@@ -8,10 +8,13 @@ export const connectDB = async () => {
     }
 
     await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 10000, // Increase timeout to 10 seconds
+      serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
       family: 4, // Force IPv4
+      directConnection: false,
+      retryWrites: true,
+      w: 'majority'
     });
     console.log("✅ MongoDB connected successfully");
   } catch (error) {

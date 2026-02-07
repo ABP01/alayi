@@ -15,9 +15,8 @@ function useUserSync() {
       const token = getToken();
       if (!token) throw new Error("No token");
 
-      const res = await api.post(
-        "/auth/me", // We'll use GET /auth/me instead of POST /auth/callback
-        {},
+      const res = await api.get(
+        "/auth/me",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -30,7 +29,7 @@ function useUserSync() {
     if (isAuthenticated && !isPending && !isSuccess) {
       syncUser();
     }
-  }, [isAuthenticated, syncUser, isPending, isSuccess]);
+  }, [isAuthenticated, isPending, isSuccess]);
 
   return { isSynced: isSuccess, isSyncing: isPending };
 }

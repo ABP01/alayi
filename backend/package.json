@@ -4,12 +4,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --watch index.ts",
-    "start": "bun index.ts",
-    "build": "bun install"
+    "dev": "tsx watch index.ts",
+    "start": "node index.js",
+    "build": "tsc"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "tsx": "^4.21.0"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -20,6 +21,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.3",
     "cors": "2.8.5",
+    "dotenv": "^17.2.4",
     "express": "5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "9.0.2",

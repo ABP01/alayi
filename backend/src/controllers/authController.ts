@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import type { AuthRequest } from "../middleware/auth";
@@ -12,10 +13,14 @@ export async function register(req: Request, res: Response, next: NextFunction) 
       return res.status(400).json({ message: "User already exists" });
     }
 
+    // Hash password manually
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const user = new User({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     await user.save();
