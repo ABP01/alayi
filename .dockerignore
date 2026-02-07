@@ -1,12 +1,27 @@
+# Dependencies
 node_modules
 npm-debug.log
+bun.lockb
+
+# Git
 .git
 .gitignore
-README.md
+
+# Environment
 .env
 .env.local
-.DS_Store
-.expo
-mobile
-*.md
+
+# IDE
 .vscode
+.idea
+
+# OS
+.DS_Store
+
+# Expo cache (but keep mobile source)
+.expo
+.expo-shared
+
+# Documentation (except main README)
+*.md
+!README.md

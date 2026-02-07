@@ -17,8 +17,8 @@
 - 🎨 Clean, Modern & Production-Ready UI
 - 📱 Cross-Platform Development (iOS, Android & Web)
 - 🛠️ REST API Design & Implementation
-- 🧪 Error Monitoring & Crash Reporting with Sentry
-- 🚀 Deployment on Sevalla (Live API + Web App)
+- ☁️ MongoDB Atlas Cloud Database
+- 🚀 Docker & Docker Compose Configuration
 - 🧰 Real-World Git & GitHub Workflow
 - 🌱 Feature Branches, Commits, Pull Requests & Merges
 - 🤖 Automated Code Reviews with CodeRabbit
@@ -33,10 +33,14 @@
 ### 🟦 Backend (`/backend`)
 
 ```bash
-MONGODB_URI=<YOUR_MONGO_URI>
+# MongoDB Atlas (Cloud Database) - Déjà configuré
+MONGODB_URI=mongodb+srv://armel:alayi2026@cluster0.aqphibe.mongodb.net/alayi?retryWrites=true&w=majority&appName=Cluster0
 
 PORT=3000
 NODE_ENV=development
+
+# JWT Secret
+JWT_SECRET=your-super-secret-jwt-key
 
 FRONTEND_URL=http://localhost:5173
 ```
@@ -46,23 +50,39 @@ FRONTEND_URL=http://localhost:5173
 ### 🟩 Web Version (/web)
 
 ```bash
-VITE_API_URL=<YOUR_DEPLOYED_API_URL>
-
-VITE_SENTRY_DSN=<YOUR_SENTRY_DSN>
+VITE_API_URL=http://localhost:3000
 ```
 
 ---
 
 ### 🟧 Mobile App (/mobile)
 
+Pas de configuration .env nécessaire (API_URL configuré dans axios.ts)
+
+---
+
+## 🐳 Run with Docker (Recommandé)
+
 ```bash
-SENTRY_AUTH_TOKEN=<YOUR_SENTRY_AUTH_TOKEN>
+# À la racine du projet
+docker-compose up -d
+
+# L'application sera disponible sur http://localhost:3000
+# Utilise automatiquement MongoDB Atlas (Cloud) ✅
 ```
+
+**Avantages Docker:**
+- ✅ Pas besoin d'installer Node.js, npm, ou MongoDB
+- ✅ Configuration identique en dev et prod
+- ✅ Démarrage en une seule commande
+
+Voir [DOCKER-CONFIG.md](DOCKER-CONFIG.md) pour plus de détails.
+
+---
 
 ## 🔧 Run the Backend
 
 ```bash
-
 cd backend
 npm install
 npm run dev

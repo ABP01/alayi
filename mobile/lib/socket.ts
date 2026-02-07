@@ -1,10 +1,9 @@
-import { create } from "zustand";
-import { io, Socket } from "socket.io-client";
-import { QueryClient } from "@tanstack/react-query";
 import { Chat, Message, MessageSender } from "@/types";
-import * as Sentry from "@sentry/react-native";
+import { QueryClient } from "@tanstack/react-query";
+import { io, Socket } from "socket.io-client";
+import { create } from "zustand";
 
-const SOCKET_URL = "https://whisper-ijeje.sevalla.app";
+const SOCKET_URL = "http://localhost:3000";
 
 interface SocketState {
   socket: Socket | null;
@@ -42,13 +41,11 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
     socket.on("connect", () => {
       console.log("Socket connected, id:", socket.id);
-      Sentry.logger.info("Socket connected", { socketId: socket.id });
       set({ isConnected: true });
     });
 
     socket.on("disconnect", () => {
       console.log("Socket disconnect", socket.id);
-      Sentry.logger.info("Socket disconnect", { socketId: socket.id });
       set({ isConnected: false });
     });
 
@@ -73,9 +70,6 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
     socket.on("socket-error", (error: { message: string }) => {
       console.error("Socket error:", error.message);
-      Sentry.logger.error("Socket error occurred", {
-        message: error.message,
-      });
     });
 
     socket.on("new-message", (message: Message) => {
@@ -202,10 +196,8 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
     socket.emit("send-message", { chatId, text });
 
-    Sentry.logger.info("Message sent successfully", { chatId, messageLength: text.length });
-
     const errorHandler = (error: { message: string }) => {
-      Sentry.logger.error("Failed to send message", {
+      console.error("Failed to send message", {
         chatId,
         error: error.message,
       });

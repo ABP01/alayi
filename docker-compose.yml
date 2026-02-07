@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Backend + Web + Mobile (all in one)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3000
+    container_name: alayi-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      # MongoDB Atlas distant (Cloud)
+      MONGODB_URI: mongodb+srv://armel:alayi2026@cluster0.aqphibe.mongodb.net/alayi?retryWrites=true&w=majority&appName=Cluster0
+      FRONTEND_URL: http://localhost:3000
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+    networks:
+      - alayi-network
+
+networks:
+  alayi-network:
+    driver: bridge

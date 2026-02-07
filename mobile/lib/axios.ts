@@ -1,9 +1,8 @@
-import * as Sentry from "@sentry/react-native";
 import axios from "axios";
 import { useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
 
-const API_URL = "https://whisper-ijeje.sevalla.app/api";
+const API_URL = "http://localhost:3000/api";
 
 // this is the same thing we did with useEffect setup but it's optimized version - it's better!!
 
@@ -17,13 +16,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      Sentry.logger.error(
-        Sentry.logger
-          .fmt`API request failed: ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+      console.error(
+        `API request failed: ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
         { status: error.response.status, endpoint: error.config?.url, method: error.config?.method }
       );
     } else if (error.request) {
-      Sentry.logger.warn("API request failed - no response", {
+      console.warn("API request failed - no response", {
         endpoint: error.config?.url,
         method: error.config?.method,
       });
