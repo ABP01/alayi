@@ -1,17 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User";
-import { mockDB } from "../config/mockDatabase";
 
 export interface AuthRequest extends Request {
   user?: any;
   userId?: string;
 }
-
-// Check if database is connected
-const isDBConnected = () => {
-  return require('mongoose').connection.readyState === 1;
-};
 
 export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -24,12 +18,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key") as any;
 
-    let user;
-    if (isDBConnected()) {
-      user = await User.findById(decoded.userId);
-    } else {
-      user = await mockDB.findById(decoded.userId);
-    }
+    const user = await User.findById(decoded.userId);
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });

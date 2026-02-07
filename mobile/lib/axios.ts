@@ -1,7 +1,7 @@
-import axios from "axios";
 import * as Sentry from "@sentry/react-native";
-import { useAuth } from "@clerk/clerk-expo";
+import axios from "axios";
 import { useCallback } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 const API_URL = "https://whisper-ijeje.sevalla.app/api";
 

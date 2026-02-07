@@ -1,18 +1,42 @@
-import { View, Text, Dimensions, Pressable, ActivityIndicator } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
-import useAuthSocial from "@/hooks/useSocialAuth";
-import { LinearGradient } from "expo-linear-gradient";
 import { AnimatedOrb } from "@/components/AnimatedOrb";
-import { BlurView } from "expo-blur";
+import { useAuth } from "@/contexts/AuthContext";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import { useState } from "react";
+import { ActivityIndicator, Alert, Dimensions, Pressable, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
 const AuthScreen = () => {
-  const { handleSocialAuth, loadingStrategy } = useAuthSocial();
+  const { login, register } = useAuth();
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const isLoading = loadingStrategy !== null;
+  const handleSubmit = async () => {
+    if (!email || !password || (!isLogin && !name)) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = isLogin
+        ? await login(email, password)
+        : await register(name, email, password);
+
+      if (!result.success) {
+        Alert.alert("Error", result.error);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View className="flex-1 bg-surface-dark">
@@ -49,89 +73,86 @@ const AuthScreen = () => {
           colors={["#F4B183", "#E76F51"]}
           size={180}
           initialX={-50}
-          initialY={height * 0.75}
+          initialY={height * 0.8}
           duration={4500}
-        />
-
-        <BlurView
-          intensity={70}
-          tint="dark"
-          style={{ position: "absolute", width: "100%", height: "100%" }}
         />
       </View>
 
       <SafeAreaView className="flex-1">
-        {/* Top Section - Branding */}
-        <View className="items-center pt-10">
-          <Image
-            source={require("../../assets/images/logo.png")}
-            style={{ width: 100, height: 100, marginVertical: -20 }}
-            contentFit="contain"
-          />
-          <Text className="text-4xl font-bold text-primary font-serif tracking-wider uppercase">
-            Whisper
-          </Text>
-        </View>
-
-        {/* CENTER SECTION - HERO IMG */}
-        <View className="flex-1 justify-center items-center px-6">
-          <Image
-            source={require("../../assets/images/auth.png")}
-            style={{
-              width: width - 48,
-              height: height * 0.3,
-            }}
-            contentFit="contain"
-          />
-
-          {/* Headline */}
-          <View className="mt-6 items-center">
-            <Text className="text-5xl font-bold text-foreground text-center font-sans">
-              Connect & Chat
-            </Text>
-            <Text className="text-3xl font-bold text-primary font-mono">Seamlessly</Text>
+        <View className="flex-1 justify-center px-6">
+          {/* LOGO */}
+          <View className="items-center mb-8">
+            <Image
+              source={require("../../assets/images/logo.png")}
+              style={{
+                width: width - 48,
+                height: height * 0.3,
+              }}
+              contentFit="contain"
+            />
           </View>
 
-          {/* AUTH BUTTONS */}
-          <View className="flex-row gap-4 mt-10">
-            {/* GOOGLE BTN */}
+          {/* FORM */}
+          <View className="bg-surface-card/80 backdrop-blur-xl rounded-3xl p-6 border border-white/10">
+            <Text className="text-2xl font-bold text-foreground text-center mb-6">
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </Text>
+
+            {!isLogin && (
+              <TextInput
+                className="bg-white/10 rounded-xl px-4 py-3 mb-4 text-foreground placeholder:text-subtle-foreground"
+                placeholder="Full Name"
+                placeholderTextColor="#6B6B70"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+              />
+            )}
+
+            <TextInput
+              className="bg-white/10 rounded-xl px-4 py-3 mb-4 text-foreground placeholder:text-subtle-foreground"
+              placeholder="Email"
+              placeholderTextColor="#6B6B70"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+
+            <TextInput
+              className="bg-white/10 rounded-xl px-4 py-3 mb-6 text-foreground placeholder:text-subtle-foreground"
+              placeholder="Password"
+              placeholderTextColor="#6B6B70"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+            />
+
             <Pressable
-              className="flex-1 flex-row items-center justify-center gap-2 bg-white/95 py-4 rounded-2xl active:scale-[0.97]"
-              disabled={isLoading}
-              accessibilityRole="button"
-              accessibilityLabel="Continue with Google"
-              onPress={() => !isLoading && handleSocialAuth("oauth_google")}
+              className="bg-primary rounded-xl py-4 items-center active:scale-[0.98]"
+              onPress={handleSubmit}
+              disabled={loading}
             >
-              {loadingStrategy === "oauth_google" ? (
-                <ActivityIndicator size="small" color="#1a1a1a" />
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <>
-                  <Image
-                    source={require("../../assets/images/google.png")}
-                    style={{ width: 20, height: 20 }}
-                    contentFit="contain"
-                  />
-                  <Text className="text-gray-900 font-semibold text-sm">Google</Text>
-                </>
+                <Text className="text-white font-semibold text-lg">
+                  {isLogin ? "Sign In" : "Sign Up"}
+                </Text>
               )}
             </Pressable>
 
-            {/* APPLE BTN */}
             <Pressable
-              className="flex-1 flex-row items-center justify-center gap-2 bg-white/10 py-4 rounded-2xl border border-white/20 active:scale-[0.97]"
-              disabled={isLoading}
-              accessibilityRole="button"
-              accessibilityLabel="Continue with Apple"
-              onPress={() => !isLoading && handleSocialAuth("oauth_apple")}
+              className="mt-4 items-center"
+              onPress={() => setIsLogin(!isLogin)}
             >
-              {loadingStrategy === "oauth_apple" ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <>
-                  <Ionicons name="logo-apple" size={20} color="#FFFFFF" />
-                  <Text className="text-foreground font-semibold text-sm">Apple</Text>
-                </>
-              )}
+              <Text className="text-subtle-foreground">
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                <Text className="text-primary font-semibold">
+                  {isLogin ? "Sign Up" : "Sign In"}
+                </Text>
+              </Text>
             </Pressable>
           </View>
         </View>

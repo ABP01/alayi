@@ -1,12 +1,12 @@
-import { Redirect, Tabs } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@clerk/clerk-expo";
+import { Redirect, Tabs } from "expo-router";
 
 const TabsLayout = () => {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
-  if (!isLoaded) return null;
-  if (!isSignedIn) return <Redirect href={"/(auth)"} />;
+  if (loading) return null;
+  if (!isAuthenticated) return <Redirect href={"/(auth)"} />;
 
   return (
     <Tabs

@@ -9,7 +9,7 @@
 - 💬 Real-Time Messaging (Built From Scratch — No 3rd Party Services)
 - ⌨️ Typing Indicators
 - 🟢 Online & Offline Presence
-- 🔐 Authentication with Clerk (React, React Native & Express SDKs)
+- 🔐 Authentication with Custom JWT (Web, Mobile & Backend)
 - 🌐 Shared Backend for Mobile & Web
 - 🧠 Custom Socket Server (No Firebase / Pusher / Ably)
 - 🚀 Backend with Bun, Express, MongoDB & TypeScript
@@ -38,9 +38,6 @@ MONGODB_URI=<YOUR_MONGO_URI>
 PORT=3000
 NODE_ENV=development
 
-CLERK_PUBLISHABLE_KEY=<YOUR_CLERK_PUBLISHABLE_KEY>
-CLERK_SECRET_KEY=<YOUR_CLERK_SECRET_KEY>
-
 FRONTEND_URL=http://localhost:5173
 ```
 
@@ -49,7 +46,6 @@ FRONTEND_URL=http://localhost:5173
 ### 🟩 Web Version (/web)
 
 ```bash
-VITE_CLERK_PUBLISHABLE_KEY=<YOUR_CLERK_PUBLISHABLE_KEY>
 VITE_API_URL=<YOUR_DEPLOYED_API_URL>
 
 VITE_SENTRY_DSN=<YOUR_SENTRY_DSN>
@@ -60,10 +56,7 @@ VITE_SENTRY_DSN=<YOUR_SENTRY_DSN>
 ### 🟧 Mobile App (/mobile)
 
 ```bash
-EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=<YOUR_CLERK_PUBLISHABLE_KEY>
-
 SENTRY_AUTH_TOKEN=<YOUR_SENTRY_AUTH_TOKEN>
-
 ```
 
 ## 🔧 Run the Backend

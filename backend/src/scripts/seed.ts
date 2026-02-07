@@ -1,65 +1,66 @@
+import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import { User } from "../models/User";
 
 const SEED_USERS = [
   {
-    clerkId: "seed_user_1",
     name: "Emma Watson",
     email: "emma@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=1",
   },
   {
-    clerkId: "seed_user_2",
     name: "James Wilson",
     email: "james@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=3",
   },
   {
-    clerkId: "seed_user_3",
     name: "Sophia Chen",
     email: "sophia@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=5",
   },
   {
-    clerkId: "seed_user_4",
     name: "Michael Brown",
     email: "michael@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=8",
   },
   {
-    clerkId: "seed_user_5",
     name: "Olivia Martinez",
     email: "olivia@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=9",
   },
   {
-    clerkId: "seed_user_6",
     name: "William Taylor",
     email: "william@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=11",
   },
   {
-    clerkId: "seed_user_7",
     name: "Ava Johnson",
     email: "ava@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=16",
   },
   {
-    clerkId: "seed_user_8",
     name: "Benjamin Lee",
     email: "benjamin@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=12",
   },
   {
-    clerkId: "seed_user_9",
     name: "Isabella Garcia",
     email: "isabella@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=20",
   },
   {
-    clerkId: "seed_user_10",
     name: "Ethan Davis",
     email: "ethan@example.com",
+    password: "password123",
     avatar: "https://i.pravatar.cc/150?img=14",
   },
 ];
@@ -70,8 +71,16 @@ async function seed() {
     await mongoose.connect(mongoURI);
     console.log("✅ Connected to MongoDB");
 
+    // Hash passwords and prepare users
+    const hashedUsers = await Promise.all(
+      SEED_USERS.map(async (user) => ({
+        ...user,
+        password: await bcrypt.hash(user.password, 10),
+      }))
+    );
+
     // Insert seed users
-    const users = await User.insertMany(SEED_USERS);
+    const users = await User.insertMany(hashedUsers);
     console.log(`🌱 Seeded ${users.length} users:`);
     users.forEach((user) => {
       console.log(`   - ${user.name} (${user.email})`);

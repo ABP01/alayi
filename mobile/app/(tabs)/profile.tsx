@@ -1,7 +1,7 @@
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { View, Text, ScrollView, Pressable } from "react-native";
-import { Image } from "expo-image";
+import { useAuth } from "@/contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 const MENU_SECTIONS = [
   {
@@ -31,8 +31,7 @@ const MENU_SECTIONS = [
 ];
 
 const ProfileTab = () => {
-  const { signOut } = useAuth();
-  const { user } = useUser();
+  const { user, logout } = useAuth();
 
   return (
     <ScrollView
@@ -108,7 +107,7 @@ const ProfileTab = () => {
       {/* Logout Button */}
       <Pressable
         className="mx-5 mt-8 bg-red-500/10 rounded-2xl py-4 items-center active:opacity-70 border border-red-500/20"
-        onPress={() => signOut()}
+        onPress={() => logout()}
       >
         <View className="flex-row items-center">
           <Ionicons name="log-out-outline" size={20} color="#EF4444" />

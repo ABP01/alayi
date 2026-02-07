@@ -8,13 +8,14 @@ export const connectDB = async () => {
     }
 
     await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+      serverSelectionTimeoutMS: 10000, // Increase timeout to 10 seconds
+      socketTimeoutMS: 45000,
+      maxPoolSize: 10,
+      family: 4, // Force IPv4
     });
     console.log("✅ MongoDB connected successfully");
   } catch (error) {
     console.error("❌ MongoDB connection error:", error);
-    console.warn("⚠️  Server will start with mock database for testing");
-    console.warn("⚠️  Authentication will work but data won't persist");
-    // Don't exit - allow server to start with mock data
+    throw error; // Exit on database connection failure
   }
 };
