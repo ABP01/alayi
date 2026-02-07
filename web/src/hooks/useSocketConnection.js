@@ -21,7 +21,7 @@ export const useSocketConnection = (activeChatId) => {
     return () => {
       disconnect();
     };
-  }, [isSignedIn, connect, disconnect, getToken, queryClient]);
+  }, [isAuthenticated, connect, disconnect, getToken, queryClient]);
 
   // join/leave chat rooms - if you have a chatid in the url this will run
   useEffect(() => {

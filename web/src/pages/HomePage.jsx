@@ -69,18 +69,20 @@ function HomePage() {
 
           {/* CTA BTNS */}
           <div className="mt-10 flex items-center gap-4">
-            <SignUpButton mode="modal">
-              <button className="group flex items-center gap-3 px-8 py-4 bg-base-100 text-base-content font-semibold rounded-2xl hover:bg-base-200 transition">
-                Start chatting
-                <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </SignUpButton>
+            <button 
+              onClick={() => setShowRegister(true)}
+              className="group flex items-center gap-3 px-8 py-4 bg-base-100 text-base-content font-semibold rounded-2xl hover:bg-base-200 transition"
+            >
+              Start chatting
+              <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
 
-            <SignInButton mode="modal">
-              <button className="px-8 py-4 text-base-content/60 font-semibold hover:text-base-content transition">
-                I have an account
-              </button>
-            </SignInButton>
+            <button 
+              onClick={() => setShowLogin(true)}
+              className="px-8 py-4 text-base-content/60 font-semibold hover:text-base-content transition"
+            >
+              I have an account
+            </button>
           </div>
 
           {/* Avatars */}
